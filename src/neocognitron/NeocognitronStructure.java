@@ -1,5 +1,11 @@
 package neocognitron;
 
+import java.awt.Color;
+import java.awt.image.*;
+import java.io.*;
+
+import javax.imageio.*;
+
 public class NeocognitronStructure {
 
 	public int inputLayerSize = 16;
@@ -88,6 +94,26 @@ public class NeocognitronStructure {
 		double output = 0;
 		for (int i = 0; i < a.length; i++) {
 			output += a[i]*b[i];
+		}
+		
+		return output;
+	}
+	
+	public static double[][] readImage(File file) throws IOException {
+		BufferedImage img;
+		img = ImageIO.read(file);
+		Color c;
+		double[][] output = new double[img.getHeight()][img.getWidth()];
+		for( int x = 0; x < img.getHeight(); x++) {
+			for (int y = 0; y < img.getWidth(); y++) {
+				c = new Color(img.getRGB(x, y));
+				if ( (c.getBlue()+c.getRed()+c.getGreen()) == 0)
+					output[x][y] = 1;
+				else
+					output[x][y] = 0;
+				System.out.print((int)output[x][y]);
+			}
+			System.out.println();
 		}
 		
 		return output;

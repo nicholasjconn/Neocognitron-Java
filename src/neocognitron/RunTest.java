@@ -1,12 +1,29 @@
 package neocognitron;
 
+import java.io.*;
+
 public class RunTest {
 
 	public static void main(String[] args)
 	{
 		System.out.println("Starting Test!");
 		
-		testMonotonicC();
+		readFile();
+	}
+	
+	public static void readFile() {
+		//BufferedImage img;
+		//File file = new File("C:\\Users\\Nicholas\\Documents\\Mesh Documents\\School\\20113\\Pattern Recognition\\Projects\\Term Project\\Test Data\\0_00.bmp");
+		File file = new File ("data\\Training Images\\0_00.bmp");
+		
+		try {
+			double[][] input = NeocognitronStructure.readImage(file);
+		}
+		catch (IOException e) {
+			System.out.println("ERROR!");
+			return;
+		}
+		
 	}
 	
 	public static void testMonotonicC() {

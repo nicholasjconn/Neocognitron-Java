@@ -3,6 +3,9 @@
  */
 package neocognitron;
 
+import java.io.File;
+import java.io.IOException;
+
 /**
  * @author Nicholas
  *
@@ -23,11 +26,19 @@ public class RunNeocognitrionTest {
 		Neocognitron neoNet = new Neocognitron(s);
 		PrintLine("Neocognitron created successfully!");
 		
-		PrintLine();
+		File file = new File ("data\\Training Images\\0_00.bmp");
+		PrintLine("\nReading input file \"" + file.getName() + "\" now...");
+
+		double[][] input;
+		try {
+			input = NeocognitronStructure.readImage(file);
+		}
+		catch (IOException e) {
+			PrintLine("\nERROR!");
+			return;
+		}
 		
-		PrintLine("Attempting to propigate input signal...");
-		
-		double[][] input = generateInputMatrix(s.inputLayerSize);
+		PrintLine("\nAttempting to propigate input signal...");
 		neoNet.propagate(input);
 	}
 	
