@@ -18,6 +18,7 @@ public class RunTest {
 		
 		try {
 			double[][] input = NeocognitronStructure.readImage(file);
+			System.out.println(input);
 		}
 		catch (IOException e) {
 			System.out.println("ERROR!");

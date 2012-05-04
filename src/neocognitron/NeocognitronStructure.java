@@ -20,6 +20,7 @@ public class NeocognitronStructure {
 	public double[] r = {4, 1.5, 1.5};
 	public double[][] c;
 	
+	public double[] q = {1, 16, 16};
 
 	public double[][] d;
 	public double alpha = .5;

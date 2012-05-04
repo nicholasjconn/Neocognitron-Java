@@ -65,7 +65,7 @@ public class SLayer {
 		// for now, generate all 1s
 		b = new double[planes];
 		for (int k = 0; k < planes; k++) {
-			b[k] = .1;
+			b[k] = 0;
 		}
 	}
 	
