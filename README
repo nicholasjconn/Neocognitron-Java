@@ -1,0 +1,7 @@
+
+The purpose of this repository is to keep track of my work on recreating the Neocognitron for one of my graduate classes. The Neocognitron is an artificial neural network which can be used to recognize handwritten characters.
+
+For now, the code is a work in progress and as such, is poorly commented and does not completely work. I make no promises that I will finish this code! If you are interested in implementing a Neocognitron, feel free to email me if you have any questions.
+
+
+Created by Nicholas J. Conn
