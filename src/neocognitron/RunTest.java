@@ -1,19 +1,55 @@
 package neocognitron;
 
+import java.awt.Point;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RunTest {
 
 	public static void main(String[] args)
 	{
 		System.out.println("Starting Test!");
+
+		RepresentativeTest();
+	}
+	
+	public static void RepresentativeTest() {
+		//OutputConnections outputs = generateOutputs(2, 4);
+		OutputConnections outputs = new OutputConnections(2,4);
+		outputs.setSingleOutput(0, 3, 3, 100);
+		outputs.setSingleOutput(1, 3, 1, 2);
+		System.out.println(outputs);
 		
-		readFile();
+		Point[] p = outputs.getRepresentativeCells(1);
+		
+		for (int i = 0; i < p.length; i++) {
+			System.out.print("For plane " + i + ": ");
+			if (p[i] == null)
+				System.out.println("none");
+			else
+				System.out.println("( " + p[i].x + ", " + p[i].y + ")");
+		}
+	}
+	
+	public static void locationTest() {
+		// Generate list of locations
+		List<Location> points = new ArrayList<Location>();
+		points.add(new Location(0,0,0));
+		points.add(new Location(1,0,0));
+		points.add(new Location(0,3,4));
+		points.add(new Location(1,3,4));
+		
+		Location test = new Location(1,0,1);
+		if ( points.contains(test) ) {
+			System.out.println("Location is already in the array!");
+		}
+		else {
+			System.out.println("Location NOT in the array!");
+		}
 	}
 	
 	public static void readFile() {
-		//BufferedImage img;
-		//File file = new File("C:\\Users\\Nicholas\\Documents\\Mesh Documents\\School\\20113\\Pattern Recognition\\Projects\\Term Project\\Test Data\\0_00.bmp");
 		File file = new File ("data\\Training Images\\0_00.bmp");
 		
 		try {
@@ -43,27 +79,35 @@ public class RunTest {
 	public static void testOutputConnections() {
 		int K = 2;
 		int size = 4;
+		
+		OutputConnections outputs = generateOutputs(K, size);
+		
+		System.out.println(outputs.toString());
+	}
+	
+	public static OutputConnections generateOutputs(int planes, int size) {
+
 		int count = 0;
-		double[][][] values = new double[K][size][size];
-		for(int k = 0; k < K; k++) {
-			System.out.println("Plane " + k);
+		double[][][] values = new double[planes][size][size];
+		for(int k = 0; k < planes; k++) {
+			//System.out.println("Plane " + k);
 			for(int n = 0; n < size; n++) {
 				for(int m = 0; m < size; m++) {
 					count++;
 					values[k][n][m] = count;
-					System.out.print(count + "\t");
+					//System.out.print(count + "\t");
 				}
-				System.out.println();
+				//System.out.println();
 			}
-			System.out.println();
+			//System.out.println();
 		}
 		
-		OutputConnections outputs = new OutputConnections(K, size);
-		for (int k = 0; k < K; k++) {
+		OutputConnections outputs = new OutputConnections(planes, size);
+		for (int k = 0; k < planes; k++) {
 			outputs.setPlaneOutput(k, values[k]);
 		}
 		
-		System.out.println(outputs.toString());
+		return outputs;
 	}
 	
 	public static void testMethods(OutputConnections outputs, int K) {

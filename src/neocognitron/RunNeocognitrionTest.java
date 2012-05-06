@@ -16,7 +16,7 @@ public class RunNeocognitrionTest {
 	 * @param args
 	 */
 	public static void main(String[] args) {		
-		PrintLine("Starting Neocognitron!");
+		PrintLine("Starting Neocognitron testing...");
 		PrintLine();
 
 		NeocognitronStructure s = new NeocognitronStructure();
@@ -39,7 +39,7 @@ public class RunNeocognitrionTest {
 		}
 		
 		PrintLine("\nAttempting to propigate input signal...");
-		neoNet.propagate(input);
+		neoNet.propagate(input, false);
 	}
 	
 	public static double[][] generateInputMatrix(int size) {

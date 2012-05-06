@@ -55,7 +55,7 @@ public class Neocognitron {
 	 * @param input	A square image containing the character to be recognized
 	 * @return		The integer representation of the recognized character
 	 */
-	public int propagate(double[][] input) {
+	public int propagate(double[][] input, boolean train) {
 
 		// If the input matrix is not the correct size, throw an error 
 		if (!(input.length == input[0].length && input.length == s.inputLayerSize))
@@ -69,7 +69,7 @@ public class Neocognitron {
 		// Propagate the input through the matrix, layer by layer
 		for (int l = 0; l < s.numLayers; l++) {
 			System.out.println("Starting propagation through S-layer " + l + "...");
-			output = sLayers[l].propagate(output);
+			output = sLayers[l].propagate(output, train);
 			System.out.println(output.toString());
 
 			System.out.println("Starting propagation through C-layer " + l + "...");

@@ -112,9 +112,9 @@ public class NeocognitronStructure {
 					output[x][y] = 1;
 				else
 					output[x][y] = 0;
-				System.out.print((int)output[x][y]);
+				//System.out.print((int)output[x][y]);
 			}
-			System.out.println();
+			//System.out.println();
 		}
 		
 		return output;

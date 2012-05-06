@@ -4,6 +4,9 @@
 package neocognitron;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.awt.Point;
 
 /**
  * 
@@ -117,7 +120,7 @@ public class OutputConnections {
 
 		return out;
 	}
-
+	
 	// TODO Finish commenting OutputConnections
 	public double[][] getWindows(int n, int m, int windowSize) {
 		double[][] out = new double[K][(int) Math.pow(windowSize, 2)];
@@ -127,18 +130,155 @@ public class OutputConnections {
 
 		return out;
 	}
+
+	
+	public double[][] getSquareWindowInPlane(int k, int n, int m, int windowSize) {
+
+		if (windowSize % 2 == 0 && windowSize != size)
+			throw new IllegalArgumentException(
+					"Window size not odd nor size of plane!");
+
+		double[][] out = new double[windowSize][windowSize];
+
+		if (windowSize == size) {
+			for (int x = 0; x < size; x++) {
+				for (int y = 0; y < size; y++) {
+					out[x][y] = outputs[k][x][y];
+				}
+			}
+		} else {
+			int offset = (windowSize - 1) / 2;
+			for (int x = n - offset; x <= n + offset; x++) {
+				for (int y = m - offset; y <= m + offset; y++) {
+					try {
+						out[x-n+offset][y-m+offset] = outputs[k][x][y];
+					} catch (ArrayIndexOutOfBoundsException e) {
+						out[x-n+offset][y-m+offset] = 0;
+					}
+				}
+			}
+		}
+
+		return out;
+	}
+	
+	public double getSingleOutput(Location l) {
+		return outputs[l.getPlane()][l.getPoint().x][l.getPoint().y];
+	}
+	
+	public double getSingleOutput(int k, int n, int m) {
+		return outputs[k][n][m];
+	}
+	
+	// TODO Finish commenting OutputConnections
+	public double[][][] getSquareWindows(int n, int m, int windowSize) {
+		double[][][] out = new double[K][windowSize][windowSize];
+
+		for (int k = 0; k < K; k++)
+			out[k] = getSquareWindowInPlane(k, n, m, windowSize);
+
+		return out;
+	}
+	
+	public Location getLocationOfMax(double[][][] sColumn, Point center,int windowSize) {
+		Location maxL = null;
+		double maxValue = 0;
+		
+		for (int k = 0; k < sColumn.length; k++) {
+			for (int n = 0; n < sColumn[0].length; n++) {
+				for (int m = 0; m < sColumn[0][0].length; m++) {
+					if ( sColumn[k][n][m] > maxValue) {
+						maxValue = sColumn[k][n][m];
+						maxL = new Location(k,n,m);
+					}
+				}
+			}
+		}
+
+		int offset = (windowSize - (windowSize%2)) / 2;
+
+		if (maxL != null) {
+			Point p = maxL.getPoint();
+			p.setLocation(p.x+center.x-offset, p.y+center.y-offset);
+			maxL.setPoint(p);
+		}
+		
+		return maxL;
+	}
+	
+	public Point getMaxPerPlane(int plane, List<Location> l) {
+		Point p = null;
+		double maxValue = 0;
+		Location temp;
+		
+		for (int i = 0; i < l.size(); i++) {
+			temp = l.get(i);
+			if (temp.getPlane() == plane) {
+				if (getSingleOutput(temp) > maxValue) {
+					maxValue = getSingleOutput(temp);
+					p = temp.getPoint();
+				}
+			}
+		}
+		
+		return p;
+	}
+	
+	//output is Point[k]
+	public Point[] getRepresentativeCells(int windowSize) {
+		List<Location> points = new ArrayList<Location>();
+		Location temp;
+				
+		double[][][] sColumn;
+		
+		if (windowSize == size) {
+			sColumn = getSquareWindows(size/2,size/2,windowSize);
+			temp = getLocationOfMax(sColumn, new Point(size/2,size/2), windowSize);
+			points.add(temp);
+		}
+		else {
+		
+			for ( int n = 0; n < size; n++) {
+				for (int m = 0; m < size; m++) {
+					sColumn = getSquareWindows(n, m, windowSize);
+					temp = getLocationOfMax(sColumn, new Point(n,m), windowSize);
+					if ( temp != null )
+						if ( !points.contains(temp) )
+							points.add(temp);
+				}
+			}
+		}
+			
+		Point[] reps = new Point[K];
+		for (int k = 0; k < K; k++)
+			reps[k] = getMaxPerPlane(k, points);
+			
+		// Must only leave 1 per plane
+		return reps;
+	}
+	
+	public double[][][] toArray() {
+		return outputs;
+	}
 	
 	public String toString() {
 		DecimalFormat df = new DecimalFormat("0.##E0");
+		DecimalFormat df1 = new DecimalFormat("#.##");
 		
 		String outputS = "Number of Planes: " + K + "\n";
 		outputS += "Size: " + size + " by " + size + "\n\n";
 		
+		double value;
+		
 		for (int k = 0; k < K; k++) {
 			outputS += "Plane " + k + ":\n";
-			for (int n = 0; n < size; n++) {
-				for (int m = 0; m < size; m++) {
-					outputS += df.format(outputs[k][n][m]) + "\t";
+			for (int m = 0; m < size; m++) {
+				for (int n = 0; n < size; n++) {
+					value = outputs[k][n][m];
+					if (value < 999)
+						outputS += df1.format(value) + "\t";
+					else
+						outputS += df.format(value) + "\t";
 				}
 				outputS += '\n';
 			}

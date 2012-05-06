@@ -37,6 +37,7 @@ public class SLayer {
 		vsCells = new VSCell[size][size];
 		
 		int previousPlanes;
+		
 		if (layer == 0)
 			previousPlanes = 1;
 		else
@@ -51,10 +52,11 @@ public class SLayer {
 		// TODO initialize random values or whatever is needed
 		// for now, generate all as 1
 		a = new double[planes][previousPlanes][(int)Math.pow(windowSize,2)];
+		
 		for (int k = 0; k < planes; k++) {
 			for (int ck = 0; ck < previousPlanes; ck++) {
 				for (int w = 0; w < Math.pow(windowSize, 2); w++ ) {
-					a[k][ck][w] = .1;
+					a[k][ck][w] = Math.random()*.1;
 				}
 			}
 		}
@@ -80,7 +82,7 @@ public class SLayer {
 		}
 	}
 	
-	public OutputConnections propagate(OutputConnections input) {
+	public OutputConnections propagate(OutputConnections input, boolean train) {
 		
 		OutputConnections output = new OutputConnections(planes, size);
 		
@@ -97,12 +99,18 @@ public class SLayer {
 				for (int k = 0; k < planes; k++) {
 					value = sCells[k][n][m].propagate(windowsFromEachPlane, vOutput[n][m], b[k], a[k] );
 					output.setSingleOutput(k, n, m, value);
-							
 				}
 			}
 		}
 		
+		if (train) {
+			updateWeights(output, vOutput);
+		}
+		
 		return output;
+	}
+	
+	public void updateWeights(OutputConnections output, double[][] vOutput) {
 	}
 	
 }
