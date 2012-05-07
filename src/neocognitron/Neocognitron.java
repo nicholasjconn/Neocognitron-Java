@@ -68,14 +68,17 @@ public class Neocognitron {
 
 		// Propagate the input through the matrix, layer by layer
 		for (int l = 0; l < s.numLayers; l++) {
-			System.out.println("Starting propagation through S-layer " + l + "...");
+			//System.out.println("Starting propagation through S-layer " + l + "...");
 			output = sLayers[l].propagate(output, train);
-			System.out.println(output.toString());
+			//System.out.println(output.toString());
 
-			System.out.println("Starting propagation through C-layer " + l + "...");
+			//System.out.println("Starting propagation through C-layer " + l + "...");
 			output = cLayers[l].propagate(output);
-			System.out.println(output.toString());
+			//System.out.println(output.toString());
+			
+			System.out.println("\nDone with input layer " + l + ".\n");
 		}
+		System.out.println(output.toString());
 
 		// Determine the output from the final layer
 		return determineOutput(output.getPointsOnPlanes(0, 0));

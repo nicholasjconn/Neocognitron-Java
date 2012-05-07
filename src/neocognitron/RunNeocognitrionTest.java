@@ -28,10 +28,15 @@ public class RunNeocognitrionTest {
 		
 		File file = new File ("data\\Training Images\\0_00.bmp");
 		PrintLine("\nReading input file \"" + file.getName() + "\" now...");
+		
+		File file1 = new File ("data\\Training Images\\1_00.bmp");
+		PrintLine("\nReading input file \"" + file.getName() + "\" now...");
 
 		double[][] input;
+		double[][] input1;
 		try {
 			input = NeocognitronStructure.readImage(file);
+			input1 = NeocognitronStructure.readImage(file1);
 		}
 		catch (IOException e) {
 			PrintLine("\nERROR!");
@@ -39,7 +44,11 @@ public class RunNeocognitrionTest {
 		}
 		
 		PrintLine("\nAttempting to propigate input signal...");
-		neoNet.propagate(input, false);
+		
+		for (int n = 0; n < 2; n++) {
+			neoNet.propagate(input, true);
+			neoNet.propagate(input1, true);
+		}
 	}
 	
 	public static double[][] generateInputMatrix(int size) {

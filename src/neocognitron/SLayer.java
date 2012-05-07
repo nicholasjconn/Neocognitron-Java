@@ -1,5 +1,8 @@
 package neocognitron;
 
+import java.awt.Point;
+import java.text.DecimalFormat;
+
 /**
  * 
  * @author Nicholas
@@ -14,6 +17,8 @@ public class SLayer {
 	private SCell[][][] sCells;
 	private VSCell[][] vsCells;
 	
+	private double q; 
+	
 	// For every plane, there exists a b[k]
 	private double[] b;
 	
@@ -22,6 +27,9 @@ public class SLayer {
 	// ck, is the location of the incoming window from the c plane
 	// and v is the window
 	private double[][][] a;
+	
+	// Weights for v-cells
+	private double[] c;
 	
 	
 	public SLayer(int layer, NeocognitronStructure s) {//, int numPlanes, int initSize, int inputWindowSize, double r, double[] c) {
@@ -36,27 +44,30 @@ public class SLayer {
 		sCells = new SCell[planes][size][size];
 		vsCells = new VSCell[size][size];
 		
-		int previousPlanes;
+		q = s.q[layer];
 		
+		int previousPlanes;
 		if (layer == 0)
 			previousPlanes = 1;
 		else
 			previousPlanes = s.numCPlanes[layer-1];
 		
+		c = s.c[layer];
+		
 		InitializeA(previousPlanes);
 		InitializeB();
-		InitializeCells(s.r[layer], s.c[layer]);
+		InitializeCells(s.r[layer]);
 	}
 	
 	public void InitializeA(int previousPlanes) {
 		// TODO initialize random values or whatever is needed
-		// for now, generate all as 1
+		// for now, generate all as random
 		a = new double[planes][previousPlanes][(int)Math.pow(windowSize,2)];
 		
 		for (int k = 0; k < planes; k++) {
 			for (int ck = 0; ck < previousPlanes; ck++) {
 				for (int w = 0; w < Math.pow(windowSize, 2); w++ ) {
-					a[k][ck][w] = Math.random()*.1;
+					a[k][ck][w] = Math.random()*.5+.5;
 				}
 			}
 		}
@@ -71,7 +82,7 @@ public class SLayer {
 		}
 	}
 	
-	public void InitializeCells(double r, double[] c) {
+	public void InitializeCells(double r) {
 		for (int n = 0 ; n < size; n++) {
 			for (int m = 0; m < size; m++) {
 				vsCells[n][m] = new VSCell(c);
@@ -104,13 +115,53 @@ public class SLayer {
 		}
 		
 		if (train) {
-			updateWeights(output, vOutput);
+			train(input, output, vOutput);
 		}
 		
 		return output;
 	}
 	
-	public void updateWeights(OutputConnections output, double[][] vOutput) {
+	public void train(OutputConnections input, OutputConnections output, double[][] vOutput) {
+		DecimalFormat df = new DecimalFormat("#.00E0");
+
+		// Determine length of the weight array that will be changed (for each window)
+		int weightLength = (int) Math.pow(windowSize,2);
+		double delta;
+		
+		// Get the representative cell locations from the output
+		Point[] repLoc = output.getRepresentativeCells(windowSize);
+		
+		// For every plane in this specific S-layer
+		for (int k = 0; k < planes; k++) {
+			// As long as there is a representative cell, update the plane weights
+			if (repLoc[k] != null) {
+				// Get specific representative location
+				Point p = repLoc[k]; 
+
+				// Update b weights, one value for each plane (not dependent on (n,m) )
+				delta = q/2 * vOutput[p.x][p.y];
+				b[k] += delta;
+				System.out.println("\nChange in b weights for plane " + k + ": " + df.format(delta) );
+				
+				// Loop for every plane in the input (from the previous C-layer) 
+				for (int ck = 0; ck < a[k].length; ck++) {
+					// Get the output for the previous C-layer (input for this layer)
+					double[] in = input.getWindowInPlane(ck, p.x, p.y, windowSize);
+					
+					System.out.print("Changes in weights for a in plane " + k + " and input plane " + ck + ":\t");
+										
+					// Loop through every weight a[k][ck][window] in the given window 
+					for(int w = 0; w < weightLength; w++) {
+						delta = q * c[w] * in[w];
+						a[k][ck][w] += delta;
+						System.out.print(df.format(delta) + "\t");
+					}
+					
+					System.out.println();
+				}
+				
+			}
+		}
 	}
 	
 }

@@ -9,7 +9,6 @@ public class SCell {
 	
 	double r;
 
-	// TODO Allow for values of a to be set during construction (overload method)
 	public SCell(double initR) {
 		r = initR;
 	}
@@ -19,7 +18,7 @@ public class SCell {
 		double output = 0;
 				
 		for( int ck = 0; ck < inputs.length; ck++) {
-			output = NeocognitronStructure.arrayMultiply(a[ck],inputs[ck]);
+			output += NeocognitronStructure.arrayMultiply(a[ck],inputs[ck]);
 		}
 		
 		double denominator = 1 + 2*r/(1+r)*b*vInput;

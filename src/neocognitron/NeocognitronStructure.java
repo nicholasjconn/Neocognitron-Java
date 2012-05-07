@@ -1,6 +1,7 @@
 package neocognitron;
 
 import java.awt.Color;
+import java.awt.geom.Point2D;
 import java.awt.image.*;
 import java.io.*;
 
@@ -62,10 +63,16 @@ public class NeocognitronStructure {
 		
 	public double[] generateMonotonic(int size, int planes) {
 		double[] output = new double[(int) Math.pow(size,2)];
+		Point2D center = new Point2D.Double( ((double) size)/2, ((double) size)/2);
 		
-		// TODO create basis monotonic function, for now just create 1s everywhere
-		for(int w = 0; w < Math.pow(size,2); w++) {
-			output[w] = 1;
+		
+		// TODO create basis monotonic function using constants shown in new paper
+		int index = 0;
+		for(int n = 0; n < size; n++) {
+			for (int m = 0; m < size; m++) {
+				output[index] = Math.pow(.6, center.distance(n,m));
+				index++;
+			}
 		}
 		
 		double sum = 0;

@@ -275,7 +275,7 @@ public class OutputConnections {
 			for (int m = 0; m < size; m++) {
 				for (int n = 0; n < size; n++) {
 					value = outputs[k][n][m];
-					if (value < 999)
+					if (value < 999 && value > .01)
 						outputS += df1.format(value) + "\t";
 					else
 						outputS += df.format(value) + "\t";
