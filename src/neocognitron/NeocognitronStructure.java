@@ -8,15 +8,19 @@ import java.io.*;
 import javax.imageio.*;
 
 public class NeocognitronStructure {
+	
+	public File logFile = new File ("data\\log\\log.txt");
+	public FileWriter out;
 
 	public int inputLayerSize = 16;
 	public int numLayers = 3;
-	public int[] numSPlanes = {8, 8, 8};
-	public int[] numCPlanes = {8, 8, 8};
-	public int[] sLayerSizes = {16, 8, 4};
-	public int[] cLayerSizes = {12, 6, 1};
-	public int[] sWindowSize = {5, 5, 3};
-	public int[] cWindowSize = {5, 3, 4};
+	public int[] numSPlanes = {12, 12, 12};
+	public int[] numCPlanes = {12, 12, 12};
+	public int[] sLayerSizes = {16, 8, 2};
+	public int[] cLayerSizes = {10, 6, 1};
+	public int[] sWindowSize = {5, 5, 5};
+	public int[] cWindowSize = {5, 5, 2};
+	public int[] sColumnSize = {5, 5, 2};
 	
 	public double[] r = {4, 1.5, 1.5};
 	public double[][] c;
@@ -26,6 +30,11 @@ public class NeocognitronStructure {
 	public double[][] d;
 	public double alpha = .5;
 	
+	double[] gamma = {.77, .95, .8};
+	double[] delta = {.34, .3, .44};
+	double[] delta_bar = {.39, .68, 1.5};
+	
+	
 	public NeocognitronStructure() {
 		
 		c = new double[numLayers][];
@@ -33,6 +42,7 @@ public class NeocognitronStructure {
 		
 		generateC();
 		generateD();
+		
 	}
 	
 	// C is a monotonic decreasing function
@@ -42,9 +52,9 @@ public class NeocognitronStructure {
 	public void generateC() {
 		
 		// For first layer, depends on input
-		c[0] = generateMonotonic(sWindowSize[0], 1);
+		c[0] = generateMonotonic(.8, sWindowSize[0], 1, true);
 		for (int l = 1; l < numLayers; l++) {
-			c[l] = generateMonotonic(sWindowSize[l], numCPlanes[l-1]);
+			c[l] = generateMonotonic(gamma[l], sWindowSize[l], numCPlanes[l-1], true);
 		}
 	}
 
@@ -57,32 +67,35 @@ public class NeocognitronStructure {
 		
 		// For first layer, depends on input
 		for (int l = 0; l < numLayers; l++) {
-			d[l] = generateMonotonic(cWindowSize[l], numSPlanes[l]);
+			d[l] = generateMonotonic(delta[l], cWindowSize[l], numSPlanes[l], false);
+			for (int w = 0; w < d[l].length; w++)
+				d[l][w] = d[l][w]*delta_bar[l];
 		}
 	}
-		
-	public double[] generateMonotonic(int size, int planes) {
+	
+	public double[] generateMonotonic(double base, int size, int planes, boolean norm) {
 		double[] output = new double[(int) Math.pow(size,2)];
-		Point2D center = new Point2D.Double( ((double) size)/2, ((double) size)/2);
-		
+		Point2D center = new Point2D.Double( ((double) size - 1)/2, ((double) size - 1)/2);
 		
 		// TODO create basis monotonic function using constants shown in new paper
 		int index = 0;
 		for(int n = 0; n < size; n++) {
 			for (int m = 0; m < size; m++) {
-				output[index] = Math.pow(.6, center.distance(n,m));
+				output[index] = Math.pow(base, center.distance(n,m));
 				index++;
 			}
 		}
 		
-		double sum = 0;
-		for (int w = 0; w < Math.pow(size,2); w++) {
-			sum += output[w];
-		}
-		// Normalize with respect to # of planes
-		double norm = 1/( (double)planes * sum);
-		for (int w = 0; w < Math.pow(size,2); w++) {
-			output[w] = output[w]*norm;
+		if (norm) {
+			double sum = 0;
+			for (int w = 0; w < Math.pow(size,2); w++) {
+				sum += output[w];
+			}
+			// Normalize with respect to # of planes
+			double multiplier = 1/( (double)planes * sum);
+			for (int w = 0; w < Math.pow(size,2); w++) {
+				output[w] = output[w]*multiplier;
+			}
 		}
 		return output;
 	}
@@ -125,5 +138,13 @@ public class NeocognitronStructure {
 		}
 		
 		return output;
+	}
+	
+	public static void writeLogLn(String s) {
+		
+	}
+	
+	public static void writeLog(String s) {
+		
 	}
 }

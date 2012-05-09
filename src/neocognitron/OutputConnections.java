@@ -213,7 +213,10 @@ public class OutputConnections {
 		
 		for (int i = 0; i < l.size(); i++) {
 			temp = l.get(i);
-			if (temp.getPlane() == plane) {
+			if (temp == null) {
+				p = null;
+			}
+			else if (temp.getPlane() == plane) {
 				if (getSingleOutput(temp) > maxValue) {
 					maxValue = getSingleOutput(temp);
 					p = temp.getPoint();
@@ -228,18 +231,21 @@ public class OutputConnections {
 	public Point[] getRepresentativeCells(int windowSize) {
 		List<Location> points = new ArrayList<Location>();
 		Location temp;
+		
+		int offset = (windowSize - 1)/2;
 				
 		double[][][] sColumn;
 		
 		if (windowSize == size) {
+			System.out.println("WindowSize == size");
 			sColumn = getSquareWindows(size/2,size/2,windowSize);
 			temp = getLocationOfMax(sColumn, new Point(size/2,size/2), windowSize);
 			points.add(temp);
 		}
 		else {
 		
-			for ( int n = 0; n < size; n++) {
-				for (int m = 0; m < size; m++) {
+			for ( int n = offset; n < size-offset; n++) {
+				for (int m = offset; m < size-offset; m++) {
 					sColumn = getSquareWindows(n, m, windowSize);
 					temp = getLocationOfMax(sColumn, new Point(n,m), windowSize);
 					if ( temp != null )
@@ -277,6 +283,8 @@ public class OutputConnections {
 					value = outputs[k][n][m];
 					if (value < 999 && value > .01)
 						outputS += df1.format(value) + "\t";
+					else if (value == 0)
+						outputS += value + "\t";
 					else
 						outputS += df.format(value) + "\t";
 				}
@@ -286,5 +294,17 @@ public class OutputConnections {
 		}
 		
 		return outputS;
+	}
+	
+	public static String arrayToString(double[][] a) {
+		String s = "";
+		
+		for(int x = 0; x < a.length; x++) { 
+			for (int y = 0; y < a[x].length; y++) {
+				s += (a[x][y] + "\t");
+			}
+			s += "\n";
+		}
+		return s;
 	}
 }

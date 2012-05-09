@@ -18,10 +18,10 @@ public class RunTest {
 		//OutputConnections outputs = generateOutputs(2, 4);
 		OutputConnections outputs = new OutputConnections(2,4);
 		outputs.setSingleOutput(0, 3, 3, 100);
-		outputs.setSingleOutput(1, 3, 1, 2);
+		outputs.setSingleOutput(1, 3, 2, 2);
 		System.out.println(outputs);
 		
-		Point[] p = outputs.getRepresentativeCells(1);
+		Point[] p = outputs.getRepresentativeCells(3);
 		
 		for (int i = 0; i < p.length; i++) {
 			System.out.print("For plane " + i + ": ");
@@ -65,13 +65,17 @@ public class RunTest {
 	
 	public static void testMonotonicC() {
 		NeocognitronStructure s = new NeocognitronStructure();
+		double sum;
 		double[] c;
 		for (int l = 0; l < s.numLayers; l++) {
+			sum = 0;
 			c = s.getC(l);
 			System.out.println("C weight matrix for layer " + l + ":");
 			for (int w = 0; w < c.length; w++) {
 				System.out.print(c[w] + "\t");
+				sum += c[w];
 			}
+			System.out.println("\nSum of values: " + sum);
 			System.out.println("\n");
 		}
 	}

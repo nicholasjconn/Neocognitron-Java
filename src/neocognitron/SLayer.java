@@ -1,7 +1,7 @@
 package neocognitron;
 
 import java.awt.Point;
-import java.text.DecimalFormat;
+//import java.text.DecimalFormat;
 
 /**
  * 
@@ -13,6 +13,7 @@ public class SLayer {
 	private int planes;
 	private int size;
 	private int windowSize;
+	private int columnSize;
 	
 	private SCell[][][] sCells;
 	private VSCell[][] vsCells;
@@ -28,7 +29,7 @@ public class SLayer {
 	// and v is the window
 	private double[][][] a;
 	
-	// Weights for v-cells
+	// Weights for v-cells c[window]
 	private double[] c;
 	
 	
@@ -40,6 +41,7 @@ public class SLayer {
 		size = s.sLayerSizes[layer];//initSize;
 		planes = s.numSPlanes[layer]; //numPlanes;
 		windowSize = s.sWindowSize[layer]; //inputWindowSize;
+		columnSize = s.sColumnSize[layer];
 		
 		sCells = new SCell[planes][size][size];
 		vsCells = new VSCell[size][size];
@@ -67,8 +69,10 @@ public class SLayer {
 		for (int k = 0; k < planes; k++) {
 			for (int ck = 0; ck < previousPlanes; ck++) {
 				for (int w = 0; w < Math.pow(windowSize, 2); w++ ) {
-					a[k][ck][w] = Math.random()*.5+.5;
+					if (Math.random() < .5)
+						a[k][ck][w] = Math.random()*.01;
 				}
+				//a[k][ck] = c;
 			}
 		}
 	}
@@ -122,14 +126,16 @@ public class SLayer {
 	}
 	
 	public void train(OutputConnections input, OutputConnections output, double[][] vOutput) {
-		DecimalFormat df = new DecimalFormat("#.00E0");
+		//DecimalFormat df = new DecimalFormat("#.00E0");
+		
+		System.out.println("vOutput:\n" + OutputConnections.arrayToString(vOutput));
 
 		// Determine length of the weight array that will be changed (for each window)
 		int weightLength = (int) Math.pow(windowSize,2);
 		double delta;
 		
 		// Get the representative cell locations from the output
-		Point[] repLoc = output.getRepresentativeCells(windowSize);
+		Point[] repLoc = output.getRepresentativeCells(columnSize);
 		
 		// For every plane in this specific S-layer
 		for (int k = 0; k < planes; k++) {
@@ -141,26 +147,39 @@ public class SLayer {
 				// Update b weights, one value for each plane (not dependent on (n,m) )
 				delta = q/2 * vOutput[p.x][p.y];
 				b[k] += delta;
-				System.out.println("\nChange in b weights for plane " + k + ": " + df.format(delta) );
+				//System.out.println("\nChange in b weights for plane " + k + ": " + df.format(delta) );
 				
 				// Loop for every plane in the input (from the previous C-layer) 
 				for (int ck = 0; ck < a[k].length; ck++) {
 					// Get the output for the previous C-layer (input for this layer)
 					double[] in = input.getWindowInPlane(ck, p.x, p.y, windowSize);
 					
-					System.out.print("Changes in weights for a in plane " + k + " and input plane " + ck + ":\t");
+					//System.out.print("Changes in weights for a in plane " + k + " and input plane " + ck + ":\t");
 										
 					// Loop through every weight a[k][ck][window] in the given window 
 					for(int w = 0; w < weightLength; w++) {
 						delta = q * c[w] * in[w];
 						a[k][ck][w] += delta;
-						System.out.print(df.format(delta) + "\t");
+						//System.out.print(df.format(delta) + "\t");
 					}
-					
-					System.out.println();
-				}
-				
+				}				
 			}
+		}
+		
+		System.out.print("\nCurrent values of b weights: ");
+		for (int k = 0; k < planes; k++) {
+			System.out.print(b[k] + "\t");
+		}
+		System.out.println();
+		
+		System.out.println("Current values for a weights:");
+		for (int k = 0; k < planes; k++) {
+			for (int ck = 0; ck < a[k].length; ck++) {
+				for(int w = 0; w < weightLength; w++) {
+					System.out.print(a[k][ck][w] + "\t");
+				}
+			}
+			System.out.println();
 		}
 	}
 	

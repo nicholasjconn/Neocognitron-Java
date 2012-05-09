@@ -5,6 +5,7 @@ package neocognitron;
 
 import java.io.File;
 import java.io.IOException;
+//import java.util.Random;
 
 /**
  * @author Nicholas
@@ -26,28 +27,41 @@ public class RunNeocognitrionTest {
 		Neocognitron neoNet = new Neocognitron(s);
 		PrintLine("Neocognitron created successfully!");
 		
-		File file = new File ("data\\Training Images\\0_00.bmp");
-		PrintLine("\nReading input file \"" + file.getName() + "\" now...");
-		
-		File file1 = new File ("data\\Training Images\\1_00.bmp");
-		PrintLine("\nReading input file \"" + file.getName() + "\" now...");
+		File files[] = new File[5];
+		files[0] = new File ("data\\Training Images\\0_00.bmp");
+		files[1] = new File ("data\\Training Images\\1_00.bmp");
+		files[2] = new File ("data\\Training Images\\2_00.bmp");
+		files[3] = new File ("data\\Training Images\\3_00.bmp");
+		files[4] = new File ("data\\Training Images\\4_00.bmp");
+		PrintLine("\nReading input files now...");
 
 		double[][] input;
-		double[][] input1;
-		try {
-			input = NeocognitronStructure.readImage(file);
-			input1 = NeocognitronStructure.readImage(file1);
-		}
-		catch (IOException e) {
-			PrintLine("\nERROR!");
-			return;
+		//Random r = new Random();
+
+		int loops = 100;
+		int[] inNumber = new int[loops];
+		int[] outLoc = new int[loops];
+		for (int n = 0; n < loops; n++) {
+			try {
+				//int roll = r.nextInt(5);
+				int roll = n%5;
+				inNumber[n] = roll;
+				input = NeocognitronStructure.readImage(files[roll]);
+			}
+			catch (IOException e) {
+				PrintLine("\nERROR!");
+				return;
+			}
+			
+			PrintLine("\nAttempting to propigate input signal...");
+		
+			outLoc[n] = neoNet.propagate(input, true);
 		}
 		
-		PrintLine("\nAttempting to propigate input signal...");
 		
-		for (int n = 0; n < 2; n++) {
-			neoNet.propagate(input, true);
-			neoNet.propagate(input1, true);
+		PrintLine("\nInput number vs output location");
+		for (int n = 0; n < loops; n++) {
+			PrintLine(inNumber[n] + "\t" + outLoc[n]);
 		}
 	}
 	
