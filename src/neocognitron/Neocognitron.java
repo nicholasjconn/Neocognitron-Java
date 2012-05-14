@@ -3,12 +3,22 @@
  */
 package neocognitron;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+
 /**
  * 
  * @author Nicholas
  *
  */
-public class Neocognitron {
+public class Neocognitron implements Serializable {
+	
+	private static final long serialVersionUID = 7536521085321150121L;
 
 	// Contains all physical structure information and constants
 	private NeocognitronStructure s;
@@ -46,6 +56,10 @@ public class Neocognitron {
 					//s.sWindowSize[l], initStruct.getR(l), initStruct.getC(l));
 			cLayers[l] = new CLayer(l, s);
 		}
+	}
+	
+	public NeocognitronStructure getStructure() {
+		return s;
 	}
 
 	/**
@@ -102,5 +116,56 @@ public class Neocognitron {
 		}
 		return index;
 	}
+	
+	public static void SaveNeocognitron(Neocognitron n, File f) {
+	
+		try {
+			// Write to disk with FileOutputStream
+			FileOutputStream f_out = new 
+				FileOutputStream(f);
+		
+			// Write object with ObjectOutputStream
+			ObjectOutputStream obj_out = new
+				ObjectOutputStream (f_out);
+		
+			// Write object out to disk
+			obj_out.writeObject ( n );
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static Neocognitron OpenNeocognitron(File f) {
 
+		Neocognitron output = null;
+		
+		try {
+			// Read from disk using FileInputStream			
+			FileInputStream f_in = new 
+				FileInputStream(f);
+	
+			// Read object using ObjectInputStream
+			ObjectInputStream obj_in = 
+				new ObjectInputStream (f_in);
+	
+			// Read an object
+			Object obj = obj_in.readObject();
+	
+			if (obj instanceof Neocognitron)
+			{
+				// Cast object to a Vector
+				output = (Neocognitron) obj;
+	
+				// Do something with vector....
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return output;
+	}
 }

@@ -7,32 +7,42 @@ import java.io.*;
 
 import javax.imageio.*;
 
-public class NeocognitronStructure {
+public class NeocognitronStructure implements Serializable {
+	
+	private static final long serialVersionUID = 7536521085321150122L;
 	
 	public File logFile = new File ("data\\log\\log.txt");
 	public FileWriter out;
 
 	public int inputLayerSize = 16;
 	public int numLayers = 3;
-	public int[] numSPlanes = {12, 12, 12};
-	public int[] numCPlanes = {12, 12, 12};
+	private int p = (int) Math.round(Math.random()*15+5);
+	public int[] numSPlanes = {p, p, p};
+	public int[] numCPlanes = {p, p, p};
 	public int[] sLayerSizes = {16, 8, 2};
 	public int[] cLayerSizes = {10, 6, 1};
 	public int[] sWindowSize = {5, 5, 5};
 	public int[] cWindowSize = {5, 5, 2};
 	public int[] sColumnSize = {5, 5, 2};
 	
-	public double[] r = {4, 1.5, 1.5};
+	//public double[] r = {4, 1.5, 1.5};
+	public double[] r = {Math.random()*4+2, Math.random()*2+1, Math.random()*2+1};
 	public double[][] c;
 	
-	public double[] q = {.1, 16, 16};
+	//public double[] q = {.1, 16, 16};
+	public double[] q = {Math.random()*.5, Math.random()*32, Math.random()*32};
 
 	public double[][] d;
-	public double alpha = .5;
+	//public double alpha = .4;
+	public double alpha = Math.random()/5+.4;
 	
-	double[] gamma = {.77, .95, .8};
-	double[] delta = {.34, .3, .44};
-	double[] delta_bar = {.39, .68, 1.5};
+//	double[] gamma = {.77, .8, .84};
+//	double[] delta = {.34, .25, .44};
+//	double[] delta_bar = {.39, .68, .39};
+	
+	double[] gamma = {Math.random(), Math.random(), Math.random()};
+	double[] delta = {Math.random(), Math.random(), Math.random()};
+	double[] delta_bar = {Math.random(), Math.random(), Math.random()};
 	
 	
 	public NeocognitronStructure() {
@@ -52,7 +62,7 @@ public class NeocognitronStructure {
 	public void generateC() {
 		
 		// For first layer, depends on input
-		c[0] = generateMonotonic(.8, sWindowSize[0], 1, true);
+		c[0] = generateMonotonic(Math.random()*.5+.5, sWindowSize[0], 1, true);
 		for (int l = 1; l < numLayers; l++) {
 			c[l] = generateMonotonic(gamma[l], sWindowSize[l], numCPlanes[l-1], true);
 		}
@@ -138,13 +148,5 @@ public class NeocognitronStructure {
 		}
 		
 		return output;
-	}
-	
-	public static void writeLogLn(String s) {
-		
-	}
-	
-	public static void writeLog(String s) {
-		
 	}
 }

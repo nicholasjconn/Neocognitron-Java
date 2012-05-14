@@ -34,12 +34,17 @@ public class RunTest {
 		}
 		
 
-		files = new File[5];
+		files = new File[10];
 		files[0] = new File ("data\\Training Images\\0_01.bmp");
 		files[1] = new File ("data\\Training Images\\1_01.bmp");
 		files[2] = new File ("data\\Training Images\\2_01.bmp");
 		files[3] = new File ("data\\Training Images\\3_01.bmp");
 		files[4] = new File ("data\\Training Images\\4_01.bmp");
+		files[5] = new File ("data\\Training Images\\0_02.bmp");
+		files[6] = new File ("data\\Training Images\\1_02.bmp");
+		files[7] = new File ("data\\Training Images\\2_02.bmp");
+		files[8] = new File ("data\\Training Images\\3_02.bmp");
+		files[9] = new File ("data\\Training Images\\4_02.bmp");
 		
 		ArrayList<double[][]> testInputs = new ArrayList<double[][]>();
 		for(int i = 0; i < files.length; i++ ) {
@@ -51,9 +56,21 @@ public class RunTest {
 			}
 		}
 				
-		NeocognitronTrainer trainer = new NeocognitronTrainer(new NeocognitronStructure(), inputs, testInputs);
-		Neocognitron n = trainer.getNeocognitron(30);
+		NeocognitronTrainer trainer = new NeocognitronTrainer(inputs, testInputs, new File ("data\\Saved Networks\\BestNeocognitron.neo"));
+		//Neocognitron n = trainer.getNeocognitron(20);
+		Neocognitron n = trainer.getNeocognitron((int)Math.round(Math.random()*20+10));
 		trainer.verifyNeocognitron(n, testInputs);
+	}
+	
+	public static void SaveTest() {
+		File f = new File ("data\\Saved Networks\\BestNeocognitron.neo");
+		Neocognitron neo = new Neocognitron(new NeocognitronStructure());
+		Neocognitron.SaveNeocognitron(neo,f);
+		
+		Neocognitron neoLoad = Neocognitron.OpenNeocognitron(f);
+		
+		System.out.println("Neocognitron Loaded Sucessfully");
+		System.out.println(neo.getStructure().alpha == neoLoad.getStructure().alpha);
 	}
 	
 	public static void RepresentativeTest() {

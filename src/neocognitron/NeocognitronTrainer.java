@@ -1,25 +1,27 @@
 package neocognitron;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public class NeocognitronTrainer {
 	
-	private NeocognitronStructure s;
 	ArrayList<double[][]> inputs;
 	ArrayList<double[][]> testInputs;
+	File neoFile;
 
-	public NeocognitronTrainer(NeocognitronStructure struct, ArrayList<double[][]> i, ArrayList<double[][]> t) {
-		s = struct;
+	public NeocognitronTrainer(ArrayList<double[][]> i, ArrayList<double[][]> t, File outFile) {
 		inputs = i;
 		testInputs = t;
+		neoFile = outFile;
 	}
 		
 	public Neocognitron runTrainingSet(int loops) {
-		Neocognitron output = new Neocognitron(s);
+		Neocognitron output = new Neocognitron(new NeocognitronStructure());
 
 		for (int n = 0; n < loops*inputs.size(); n++) {
-			output.propagate(inputs.get(n % inputs.size()), true);
+			//output.propagate(inputs.get(n % inputs.size()), true);
+			output.propagate(inputs.get((int)Math.round(Math.random()*(inputs.size()-1))), true);
 		}		
 		return output;
 	}
@@ -46,36 +48,43 @@ public class NeocognitronTrainer {
 		Neocognitron output;
 		
 		int count = 0;
+		double errorRate = 1;
+		double bestError = 1;
 		System.out.println("Starting Training");
 		do {
 			do {
 				output = runTrainingSet(trainingLoops);
 				count++;
-				System.out.print("\r" +count);
+				System.out.println("Loop: " + count + "\t\tBest: " + bestError + "\t\tCurrent: " + errorRate);
 			} while(!verifyTraining(output));
-		}while(!verifyNeocognitron(output,testInputs)) ;
+			errorRate = verifyNeocognitron(output,testInputs);
+			if (errorRate < bestError) {
+				Neocognitron.SaveNeocognitron(output, neoFile);
+				bestError = errorRate;
+			}
+		}while( errorRate != 0) ;
 		
 		return output;
 	}
 
-	public boolean verifyNeocognitron(Neocognitron n, ArrayList<double[][]> t) {
-		if (testInputs.size() != inputs.size()) {
+	public double verifyNeocognitron(Neocognitron n, ArrayList<double[][]> t) {
+		if (testInputs.size() % inputs.size() != 0) {
 			throw new IllegalArgumentException();
 		}
 		
-		boolean output = true;
+		double output = 0;
 		
 		int trainingOutput, testOutput;
 		System.out.println("Training vs Test");
-		for (int i = 0; i < inputs.size(); i++) {
-			trainingOutput = n.propagate(inputs.get(i), false);
+		for (int i = 0; i < t.size(); i++) {
+			trainingOutput = n.propagate(inputs.get(i%inputs.size()), false);
 			testOutput = n.propagate(t.get(i), false);
 
 			System.out.println(trainingOutput + "\t" + testOutput);
 			
 			if (trainingOutput !=  testOutput)
-				output = false;
+				output++;
 		}
-		return output;
+		return output/t.size();
 	}
 }

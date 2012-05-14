@@ -1,6 +1,10 @@
 package neocognitron;
 
-public class VCCell {
+import java.io.Serializable;
+
+public class VCCell implements Serializable {
+	
+	private static final long serialVersionUID = 7536521085321150125L;
 	
 	private double[] d;
 	

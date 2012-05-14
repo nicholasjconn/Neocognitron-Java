@@ -3,11 +3,15 @@
  */
 package neocognitron;
 
+import java.io.Serializable;
+
 /**
  * @author Nicholas
  *
  */
-public class CLayer {
+public class CLayer implements Serializable {
+	
+	private static final long serialVersionUID = 7536521085321150123L;
 
 	private int planes;
 	private int size;

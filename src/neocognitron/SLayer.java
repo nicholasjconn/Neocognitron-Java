@@ -2,13 +2,16 @@ package neocognitron;
 
 import java.awt.Point;
 //import java.text.DecimalFormat;
+import java.io.Serializable;
 
 /**
  * 
  * @author Nicholas
  *
  */
-public class SLayer {
+public class SLayer implements Serializable {
+	
+	private static final long serialVersionUID = 7536521085321150126L;
 	
 	private int planes;
 	private int size;

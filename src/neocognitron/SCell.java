@@ -1,11 +1,15 @@
 package neocognitron;
 
+import java.io.Serializable;
+
 /**
  * 
  * @author Nicholas
  *
  */
-public class SCell {
+public class SCell implements Serializable {
+	
+	private static final long serialVersionUID = 7536521085321150128L;
 	
 	double r;
 
