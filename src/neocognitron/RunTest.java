@@ -11,7 +11,49 @@ public class RunTest {
 	{
 		System.out.println("Starting Test!");
 
-		RepresentativeTest();
+		TrainerTest();
+	}
+	
+	public static void TrainerTest() {
+
+		File[] files = new File[5];
+		files[0] = new File ("data\\Training Images\\0_00.bmp");
+		files[1] = new File ("data\\Training Images\\1_00.bmp");
+		files[2] = new File ("data\\Training Images\\2_00.bmp");
+		files[3] = new File ("data\\Training Images\\3_00.bmp");
+		files[4] = new File ("data\\Training Images\\4_00.bmp");
+		
+		ArrayList<double[][]> inputs = new ArrayList<double[][]>();
+		for(int i = 0; i < files.length; i++ ) {
+			try {
+				inputs.add(NeocognitronStructure.readImage(files[i]));
+			}
+			catch (IOException e) {
+				System.out.println("\nERROR!");
+			}
+		}
+		
+
+		files = new File[5];
+		files[0] = new File ("data\\Training Images\\0_01.bmp");
+		files[1] = new File ("data\\Training Images\\1_01.bmp");
+		files[2] = new File ("data\\Training Images\\2_01.bmp");
+		files[3] = new File ("data\\Training Images\\3_01.bmp");
+		files[4] = new File ("data\\Training Images\\4_01.bmp");
+		
+		ArrayList<double[][]> testInputs = new ArrayList<double[][]>();
+		for(int i = 0; i < files.length; i++ ) {
+			try {
+				testInputs.add(NeocognitronStructure.readImage(files[i]));
+			}
+			catch (IOException e) {
+				System.out.println("\nERROR!");
+			}
+		}
+				
+		NeocognitronTrainer trainer = new NeocognitronTrainer(new NeocognitronStructure(), inputs, testInputs);
+		Neocognitron n = trainer.getNeocognitron(30);
+		trainer.verifyNeocognitron(n, testInputs);
 	}
 	
 	public static void RepresentativeTest() {

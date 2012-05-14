@@ -237,7 +237,6 @@ public class OutputConnections {
 		double[][][] sColumn;
 		
 		if (windowSize == size) {
-			System.out.println("WindowSize == size");
 			sColumn = getSquareWindows(size/2,size/2,windowSize);
 			temp = getLocationOfMax(sColumn, new Point(size/2,size/2), windowSize);
 			points.add(temp);
@@ -297,11 +296,21 @@ public class OutputConnections {
 	}
 	
 	public static String arrayToString(double[][] a) {
+		DecimalFormat df = new DecimalFormat("0.##E0");
+		DecimalFormat df1 = new DecimalFormat("#.##");
+		
 		String s = "";
+		double value;
 		
 		for(int x = 0; x < a.length; x++) { 
 			for (int y = 0; y < a[x].length; y++) {
-				s += (a[x][y] + "\t");
+				value = a[x][y];
+				if (value < 999 && value > .01)
+					s += df1.format(value) + "\t";
+				else if (value == 0)
+					s += value + "\t";
+				else
+					s += df.format(value) + "\t";
 			}
 			s += "\n";
 		}

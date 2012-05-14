@@ -65,7 +65,7 @@ public class Neocognitron {
 		// Initialize output class with the input matrix
 		OutputConnections output = new OutputConnections(1, s.inputLayerSize);
 		output.setPlaneOutput(0, input);
-		System.out.println(output.toString());
+		//System.out.println(output.toString());
 
 		// Propagate the input through the matrix, layer by layer
 		for (int l = 0; l < s.numLayers; l++) {
@@ -77,9 +77,9 @@ public class Neocognitron {
 			output = cLayers[l].propagate(output);
 			//System.out.println(output.toString());
 			
-			System.out.println("\nDone with input layer " + l + ".\n");
+			//System.out.println("\nDone with input layer " + l + ".\n");
 		}
-		System.out.println(output.toString());
+		//System.out.println(output.toString());
 
 		// Determine the output from the final layer
 		return determineOutput(output.getPointsOnPlanes(0, 0));
@@ -92,7 +92,7 @@ public class Neocognitron {
 	 * @return
 	 */
 	public int determineOutput(double[] out) {
-		double maxValue = out[0];
+		double maxValue = 0;
 		int index = -1;
 		for (int i = 0; i < out.length; i++) {
 			if (out[i] > maxValue) {

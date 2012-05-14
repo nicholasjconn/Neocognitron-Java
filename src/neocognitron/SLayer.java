@@ -69,8 +69,8 @@ public class SLayer {
 		for (int k = 0; k < planes; k++) {
 			for (int ck = 0; ck < previousPlanes; ck++) {
 				for (int w = 0; w < Math.pow(windowSize, 2); w++ ) {
-					if (Math.random() < .5)
-						a[k][ck][w] = Math.random()*.01;
+					//if (Math.random() < 1)
+						a[k][ck][w] = Math.random();
 				}
 				//a[k][ck] = c;
 			}
@@ -120,6 +120,7 @@ public class SLayer {
 		
 		if (train) {
 			train(input, output, vOutput);
+			output = this.propagate(input, false);
 		}
 		
 		return output;
@@ -128,7 +129,7 @@ public class SLayer {
 	public void train(OutputConnections input, OutputConnections output, double[][] vOutput) {
 		//DecimalFormat df = new DecimalFormat("#.00E0");
 		
-		System.out.println("vOutput:\n" + OutputConnections.arrayToString(vOutput));
+		//System.out.println("vOutput:\n" + OutputConnections.arrayToString(vOutput));
 
 		// Determine length of the weight array that will be changed (for each window)
 		int weightLength = (int) Math.pow(windowSize,2);
@@ -166,21 +167,17 @@ public class SLayer {
 			}
 		}
 		
-		System.out.print("\nCurrent values of b weights: ");
-		for (int k = 0; k < planes; k++) {
-			System.out.print(b[k] + "\t");
-		}
-		System.out.println();
-		
-		System.out.println("Current values for a weights:");
-		for (int k = 0; k < planes; k++) {
-			for (int ck = 0; ck < a[k].length; ck++) {
-				for(int w = 0; w < weightLength; w++) {
-					System.out.print(a[k][ck][w] + "\t");
-				}
-			}
-			System.out.println();
-		}
+//		System.out.print("\nCurrent values of b weights: ");
+//		for (int k = 0; k < planes; k++) {
+//			System.out.print(b[k] + "\t");
+//		}
+//		System.out.println();
+//		
+//		System.out.println("Current values for a weights:");
+//		for (int k = 0; k < planes; k++) {
+//			System.out.print(OutputConnections.arrayToString(a[k]));
+//			System.out.println();
+//		}
 	}
 	
 }
