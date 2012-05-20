@@ -12,25 +12,22 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 /**
+ * The neocognitron object contains all needed to train and propagate an input
+ * image. The structure of the network is defined by a NeocognitronStructure
+ * object. Additionally, the neocognitron is serializable so that it can be
+ * saved for further use. The Neocognitron contains the methods needed to load
+ * and save a neocognitron. 
  * 
- * @author Nicholas
+ * @author Nicholas J. Conn
  *
  */
 public class Neocognitron implements Serializable {
-	
+
+	// UID number used for object serialization
 	private static final long serialVersionUID = 7536521085321150121L;
 
 	// Contains all physical structure information and constants
 	private NeocognitronStructure s;
-	// Defaults for structure s
-	//   inputLayerSize = 16;
-	//   numLayers = 3;
-	//   numSPlanes = {8, 8, 8};
-	//   numCPlanes = {8, 8, 8};
-	//   sLayerSizes = {16, 8, 4};
-	//   cLayerSizes = {12, 6, 1};
-	//   sWindowSize = {5, 5, 3};
-	//   cWindowSize = {5, 3, 4};
 
 	// An array of each c and s layers
 	private CLayer[] cLayers;
@@ -58,15 +55,23 @@ public class Neocognitron implements Serializable {
 		}
 	}
 	
+	/**
+	 * Get the structure used to initialize the neocognitron
+	 * 
+	 * @return	NeocognitronStructure object for the Neocognitron
+	 */
 	public NeocognitronStructure getStructure() {
 		return s;
 	}
 
 	/**
 	 * Given an input matrix (character image), the neural network determined
-	 * which character the image contains.
+	 * which character the image represents. This method is also used to train
+	 * the Neocognitron.
 	 * 
-	 * @param input	A square image containing the character to be recognized
+	 * @param input	A square image containing the character to be recognized.
+	 * @param train	A boolean value which determines if the network should
+	 * 				be trained or not
 	 * @return		The integer representation of the recognized character
 	 */
 	public int propagate(double[][] input, boolean train) {
@@ -100,10 +105,12 @@ public class Neocognitron implements Serializable {
 	}
 
 	/**
-	 * TODO Actually figure out how determineOutput works!
+	 * Given the output from the final layer, determine the output of
+	 * the network. The output is an integer which ranges across all
+	 * possible outputs.
 	 * 
-	 * @param out
-	 * @return
+	 * @param out	Output from the last layer in the neocognitron.
+	 * @return		The index of the maximum output in the last layer.
 	 */
 	public int determineOutput(double[] out) {
 		double maxValue = 0;
@@ -117,6 +124,14 @@ public class Neocognitron implements Serializable {
 		return index;
 	}
 	
+	/**
+	 * Serialize the neocognitron and save it to a specific file. This
+	 * method is static and can be used without creating a specific
+	 * instance of the Neocognitron.
+	 * 
+	 * @param n		Neocognitron object to be saved
+	 * @param f		Location of the resulting neocognitron.
+	 */
 	public static void SaveNeocognitron(Neocognitron n, File f) {
 	
 		try {
@@ -136,8 +151,15 @@ public class Neocognitron implements Serializable {
 		}
 	}
 	
+	/**
+	 * Open a previously saved neocognitron file and returns the 
+	 * original Neocognitron.
+	 * 
+	 * @param f		File which contains the neocognitron
+	 * @return		The loaded neocognitron
+	 */
 	public static Neocognitron OpenNeocognitron(File f) {
-
+		// Initialize the output, if not successfully open, returns null.
 		Neocognitron output = null;
 		
 		try {
@@ -152,17 +174,15 @@ public class Neocognitron implements Serializable {
 			// Read an object
 			Object obj = obj_in.readObject();
 	
+			// Determine if the object is a neocognitron
 			if (obj instanceof Neocognitron)
 			{
-				// Cast object to a Vector
+				// Cast object as a Neocognitron
 				output = (Neocognitron) obj;
-	
-				// Do something with vector....
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		

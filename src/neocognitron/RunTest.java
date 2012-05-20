@@ -2,26 +2,37 @@ package neocognitron;
 
 import java.awt.Point;
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+/**
+ * This is a static class used to run the entire neocognitron, including
+ * the training and analysis.
+ * 
+ * @author Nicholas J. Conn
+ *
+ */
 public class RunTest {
 
-	public static void main(String[] args)
+	public static void main ( String[] args )
 	{
 		System.out.println("Starting Test!");
 
 		TrainerTest();
 	}
 	
-	public static void TrainerTest() {
-
+	/**
+	 * Read in the best networks and determine their structure
+	 */
+	public static void TestBestSaved() {
 		File[] files = new File[5];
-		files[0] = new File ("data\\Training Images\\0_00.bmp");
-		files[1] = new File ("data\\Training Images\\1_00.bmp");
-		files[2] = new File ("data\\Training Images\\2_00.bmp");
-		files[3] = new File ("data\\Training Images\\3_00.bmp");
-		files[4] = new File ("data\\Training Images\\4_00.bmp");
+		files[0] = new File ("data/Training Images/0_00.bmp");
+		files[1] = new File ("data/Training Images/1_00.bmp");
+		files[2] = new File ("data/Training Images/2_00.bmp");
+		files[3] = new File ("data/Training Images/3_00.bmp");
+		files[4] = new File ("data/Training Images/4_00.bmp");
 		
 		ArrayList<double[][]> inputs = new ArrayList<double[][]>();
 		for(int i = 0; i < files.length; i++ ) {
@@ -34,17 +45,22 @@ public class RunTest {
 		}
 		
 
-		files = new File[10];
-		files[0] = new File ("data\\Training Images\\0_01.bmp");
-		files[1] = new File ("data\\Training Images\\1_01.bmp");
-		files[2] = new File ("data\\Training Images\\2_01.bmp");
-		files[3] = new File ("data\\Training Images\\3_01.bmp");
-		files[4] = new File ("data\\Training Images\\4_01.bmp");
-		files[5] = new File ("data\\Training Images\\0_02.bmp");
-		files[6] = new File ("data\\Training Images\\1_02.bmp");
-		files[7] = new File ("data\\Training Images\\2_02.bmp");
-		files[8] = new File ("data\\Training Images\\3_02.bmp");
-		files[9] = new File ("data\\Training Images\\4_02.bmp");
+		files = new File[15];
+		files[0] = new File ("data/Training Images/0_01.bmp");
+		files[1] = new File ("data/Training Images/1_01.bmp");
+		files[2] = new File ("data/Training Images/2_01.bmp");
+		files[3] = new File ("data/Training Images/3_01.bmp");
+		files[4] = new File ("data/Training Images/4_01.bmp");
+		files[5] = new File ("data/Training Images/0_02.bmp");
+		files[6] = new File ("data/Training Images/1_02.bmp");
+		files[7] = new File ("data/Training Images/2_02.bmp");
+		files[8] = new File ("data/Training Images/3_02.bmp");
+		files[9] = new File ("data/Training Images/4_02.bmp");
+		files[10] = new File ("data/Training Images/0_03.bmp");
+		files[11] = new File ("data/Training Images/1_03.bmp");
+		files[12] = new File ("data/Training Images/2_03.bmp");
+		files[13] = new File ("data/Training Images/3_03.bmp");
+		files[14] = new File ("data/Training Images/4_03.bmp");
 		
 		ArrayList<double[][]> testInputs = new ArrayList<double[][]>();
 		for(int i = 0; i < files.length; i++ ) {
@@ -55,15 +71,88 @@ public class RunTest {
 				System.out.println("\nERROR!");
 			}
 		}
-				
-		NeocognitronTrainer trainer = new NeocognitronTrainer(inputs, testInputs, new File ("data\\Saved Networks\\BestNeocognitron.neo"));
+		
+		
+		File[] faFiles = new File("data/Saved Networks/30 Percent").listFiles();
+		for (File file : faFiles) {
+			int dotPosition = file.toString().lastIndexOf(".");
+			if (dotPosition != -1) {
+			    if (file.toString().substring(dotPosition).equals(".neo")) {
+			    	System.out.println();
+			    	System.out.println(file.getAbsolutePath());
+			    	Neocognitron n = Neocognitron.OpenNeocognitron(file);
+			    	NeocognitronStructure s = n.getStructure();
+			    	NeocognitronTrainer trainer = new NeocognitronTrainer(inputs, testInputs,null);
+			    	double error = trainer.verifyNeocognitron(n);
+			    	System.out.println("Eror Rate: " + error);
+			    	System.out.println("Planes: " + s.numCPlanes[0]);
+			    	System.out.println("r values: " + OutputConnections.arrayToString(s.r) );
+			    	System.out.println("q values: " + OutputConnections.arrayToString(s.q) );
+			    	System.out.println("alpha: " + s.alpha);
+			    	System.out.println("gamma: " +  OutputConnections.arrayToString(s.gamma) );
+			    	System.out.println("delta: " +  OutputConnections.arrayToString(s.delta) );
+			    	System.out.println("delta_bar: " +  OutputConnections.arrayToString(s.delta_bar) );
+			    }
+			}
+		}
+	}
+	
+	/**
+	 * Determine best neocognitron by generating many different networks.
+	 */
+	public static void TrainerTest() {
+
+		File[] files = new File[5];
+		files[0] = new File ("data/Training Images/0_00.bmp");
+		files[1] = new File ("data/Training Images/1_00.bmp");
+		files[2] = new File ("data/Training Images/2_00.bmp");
+		files[3] = new File ("data/Training Images/3_00.bmp");
+		files[4] = new File ("data/Training Images/4_00.bmp");
+		
+		ArrayList<double[][]> inputs = new ArrayList<double[][]>();
+		for(int i = 0; i < files.length; i++ ) {
+			try {
+				inputs.add(NeocognitronStructure.readImage(files[i]));
+			}
+			catch (IOException e) {
+				System.out.println("\nERROR!");
+			}
+		}
+		
+		files = new File[10];
+		files[0] = new File ("data/Training Images/0_01.bmp");
+		files[1] = new File ("data/Training Images/1_01.bmp");
+		files[2] = new File ("data/Training Images/2_01.bmp");
+		files[3] = new File ("data/Training Images/3_01.bmp");
+		files[4] = new File ("data/Training Images/4_01.bmp");
+		files[5] = new File ("data/Training Images/0_02.bmp");
+		files[6] = new File ("data/Training Images/1_02.bmp");
+		files[7] = new File ("data/Training Images/2_02.bmp");
+		files[8] = new File ("data/Training Images/3_02.bmp");
+		files[9] = new File ("data/Training Images/4_02.bmp");
+		
+		ArrayList<double[][]> testInputs = new ArrayList<double[][]>();
+		for(int i = 0; i < files.length; i++ ) {
+			try {
+				testInputs.add(NeocognitronStructure.readImage(files[i]));
+			}
+			catch (IOException e) {
+				System.out.println("\nERROR!");
+			}
+		}
+
+		SimpleDateFormat dateFormat = new SimpleDateFormat("-yyyyMMdd-hhmm");		
+		NeocognitronTrainer trainer = new NeocognitronTrainer(inputs, testInputs, new File ("data/Saved Networks/BestNeocognitron" + dateFormat.format(new Date())+ ".neo"));
 		//Neocognitron n = trainer.getNeocognitron(20);
-		Neocognitron n = trainer.getNeocognitron((int)Math.round(Math.random()*20+10));
+		Neocognitron n = trainer.getNeocognitron((int)Math.round(Math.random()*15+5));
 		trainer.verifyNeocognitron(n, testInputs);
 	}
 	
+	/**
+	 * Test saving a neocognitron.
+	 */
 	public static void SaveTest() {
-		File f = new File ("data\\Saved Networks\\BestNeocognitron.neo");
+		File f = new File ("data/Saved Networks/BestNeocognitron.neo");
 		Neocognitron neo = new Neocognitron(new NeocognitronStructure());
 		Neocognitron.SaveNeocognitron(neo,f);
 		
@@ -73,6 +162,9 @@ public class RunTest {
 		System.out.println(neo.getStructure().alpha == neoLoad.getStructure().alpha);
 	}
 	
+	/**
+	 * Test the representative cell methods.
+	 */
 	public static void RepresentativeTest() {
 		//OutputConnections outputs = generateOutputs(2, 4);
 		OutputConnections outputs = new OutputConnections(2,4);
@@ -91,6 +183,9 @@ public class RunTest {
 		}
 	}
 	
+	/**
+	 * Test the Location class
+	 */
 	public static void locationTest() {
 		// Generate list of locations
 		List<Location> points = new ArrayList<Location>();
@@ -108,8 +203,11 @@ public class RunTest {
 		}
 	}
 	
+	/** 
+	 * Test reading in a specific input file
+	 */
 	public static void readFile() {
-		File file = new File ("data\\Training Images\\0_00.bmp");
+		File file = new File ("data/Training Images/0_00.bmp");
 		
 		try {
 			double[][] input = NeocognitronStructure.readImage(file);
@@ -119,9 +217,11 @@ public class RunTest {
 			System.out.println("ERROR!");
 			return;
 		}
-		
 	}
 	
+	/**
+	 * Test the monotonic function generater methods.
+	 */
 	public static void testMonotonicC() {
 		NeocognitronStructure s = new NeocognitronStructure();
 		double sum;
@@ -139,6 +239,9 @@ public class RunTest {
 		}
 	}
 	
+	/**
+	 * Test the OutputConnection class
+	 */
 	public static void testOutputConnections() {
 		int K = 2;
 		int size = 4;
@@ -148,6 +251,13 @@ public class RunTest {
 		System.out.println(outputs.toString());
 	}
 	
+	/**
+	 * Generate an artificial OutputConnection
+	 * 
+	 * @param planes	Number of planes
+	 * @param size		Size of each plane
+	 * @return			Resulting OutputConnection
+	 */
 	public static OutputConnections generateOutputs(int planes, int size) {
 
 		int count = 0;
@@ -173,6 +283,12 @@ public class RunTest {
 		return outputs;
 	}
 	
+	/**
+	 * Test the methods within OutputConnections
+	 * 
+	 * @param outputs	OutputConnections under test
+	 * @param K			Number of planes
+	 */
 	public static void testMethods(OutputConnections outputs, int K) {
 		
 		System.out.println("Single plane window test:");
@@ -191,24 +307,4 @@ public class RunTest {
 		}
 		System.out.println();
 	}
-		
-		
-		
-		
-//		for (int k = 0; k < K; k++) {
-//			System.out.println("Object Plane " + k);
-//			double plane[][] = outputs.getPlane(k);
-//			for(int n = 0; n < size; n++) {
-//				for(int m = 0; m < size; m++) {
-//					System.out.print(plane[n][m] + "\t");
-//				}
-//				System.out.println();
-//			}
-//			System.out.println();
-//		}
-//		
-//		System.out.println("Location Test at (3, 3)!");
-//		double[] temp = outputs.getPointsOnPlanes(3, 3);
-//		for (int k = 0; k < K; k++)
-//			System.out.println(temp[k] + "\t");
 }
