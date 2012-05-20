@@ -1,6 +1,7 @@
 package neocognitron;
 
 import java.io.File;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +20,8 @@ public class NeocognitronTrainer {
 	ArrayList<double[][]> testInputs;
 	// File to save the most successful neocognitron during training
 	File neoFile;
+
+	DecimalFormat df = new DecimalFormat("#.##");
 
 	/**
 	 * Initialize the neocognitron trainer with a set of input files, training
@@ -96,9 +99,9 @@ public class NeocognitronTrainer {
 			do {	// and while the training is not successful
 				output = runTrainingSet(trainingLoops);
 				count++;
-				System.out.print("Loop: " + count + "\t\tBest: " + bestError + "\t\tCurrent: " + errorRate + "\r");
+				System.out.print("Loop: " + count + "      Best: " + df.format(bestError) + "      Current: " + df.format(errorRate) + "\r");
 			} while(!verifyTraining(output));
-			errorRate = verifyNeocognitron(output,testInputs);
+			errorRate = verifyNeocognitron(output,testInputs, false);
 			if (errorRate < bestError) {
 				Neocognitron.SaveNeocognitron(output, neoFile);
 				bestError = errorRate;
@@ -112,21 +115,23 @@ public class NeocognitronTrainer {
 	 * Calculate the error rate of a specific neocognitron.
 	 * 
 	 * @param n		The neocognitron under test.
+	 * @param verbose	Display each test on the console.
 	 * @return		The resulting error rate.
 	 */
-	public double verifyNeocognitron(Neocognitron n) {
-		return verifyNeocognitron(n, testInputs);
+	public double verifyNeocognitron(Neocognitron n, boolean verbose) {
+		return verifyNeocognitron(n, testInputs, verbose);
 	}
 
 	/**
 	 * Calculate the error rate of a specific neocognitron using a specific
 	 * list of inputs.
 	 * 
-	 * @param n		The neocognitron under test
-	 * @param t		The list of files used to verify the network
-	 * @return		The resulting error rate
+	 * @param n			The neocognitron under test
+	 * @param t			The list of files used to verify the network
+	 * @param verbose	Display each test on the console.
+	 * @return			The resulting error rate
 	 */
-	public double verifyNeocognitron(Neocognitron n, ArrayList<double[][]> t) {
+	public double verifyNeocognitron(Neocognitron n, ArrayList<double[][]> t, boolean verbose) {
 		if (t.size() % inputs.size() != 0) {
 			throw new IllegalArgumentException();
 		}
@@ -134,12 +139,14 @@ public class NeocognitronTrainer {
 		double output = 0;
 		
 		int trainingOutput, testOutput;
-		System.out.println("Training vs Test");
+		if (verbose)
+			System.out.println("Training vs Test");
 		for (int i = 0; i < t.size(); i++) {
 			trainingOutput = n.propagate(inputs.get(i%inputs.size()), false);
 			testOutput = n.propagate(t.get(i), false);
 
-			System.out.println(trainingOutput + "\t" + testOutput);
+			if (verbose)
+				System.out.println(trainingOutput + "\t" + testOutput);
 			
 			if (trainingOutput !=  testOutput)
 				output++;

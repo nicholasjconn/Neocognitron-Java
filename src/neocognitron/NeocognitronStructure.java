@@ -46,10 +46,10 @@ public class NeocognitronStructure implements Serializable {
 	public double alpha = Math.random()*.08+.42;
 
 	// Values used to determine c and d
-	double[] gamma = {0.11, 0.42, 0.06};
+//	double[] gamma = {0.11, 0.42, 0.06};
 //	double[] delta = {0.49, 0.87, 0.52};
 //	double[] delta_bar = {.39, .68, .39};
-//	double[] gamma = {Math.random(), Math.random(), Math.random()};
+	double[] gamma = {Math.random(), Math.random(), Math.random()};
 	double[] delta = {Math.random()*.2+.4, Math.random()*.75+.2, Math.random()*.3+.4};
 	double[] delta_bar = {Math.random(), Math.random(), Math.random()};
 	
@@ -74,7 +74,7 @@ public class NeocognitronStructure implements Serializable {
 	public void generateC() {
 		
 		// For first layer, depends on input
-		c[0] = generateMonotonic(Math.random()*.75, sWindowSize[0], 1, true);
+		c[0] = generateMonotonic(gamma[0], sWindowSize[0], 1, true);
 		for (int l = 1; l < numLayers; l++) {
 			c[l] = generateMonotonic(gamma[l], sWindowSize[l], numCPlanes[l-1], true);
 		}

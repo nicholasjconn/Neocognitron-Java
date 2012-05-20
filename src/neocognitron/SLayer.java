@@ -89,7 +89,7 @@ public class SLayer implements Serializable {
 		for (int k = 0; k < planes; k++) {
 			for (int ck = 0; ck < previousPlanes; ck++) {
 				for (int w = 0; w < Math.pow(windowSize, 2); w++ ) {
-						a[k][ck][w] = Math.random()*.5;
+						a[k][ck][w] = Math.random()*.4;
 				}
 			}
 		}

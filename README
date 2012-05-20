@@ -1,7 +1,22 @@
 
-The purpose of this repository is to keep track of my work on recreating the Neocognitron for one of my graduate classes. The Neocognitron is an artificial neural network which can be used to recognize handwritten characters.
-
-For now, the code is a work in progress and as such, is poorly commented and does not completely work. I make no promises that I will finish this code! If you are interested in implementing a Neocognitron, feel free to email me if you have any questions.
+The Neocognitron is a neural network proposed by Fukushima; it is used for character recognition. This repository contains everything you need to experiment with a basic Neocognitron. This code was created for my final project in Pattern Recognition at RIT.
 
 
-Created by Nicholas J. Conn
+The organization of this project is as follows:
+
+src     Contains all the source code for the project
+data    Contains all the training files needed to run the Neocognitron. Also contains previously saved Neocognitrons.
+doc     Complete javadoc for the entire project. Start with doc/index.html 
+
+
+To run the project, use the executable jar file, Neocognitron.jar.
+
+Use the following command to verify the saved Neocognitron.
+java -jar Neocognitron.jar verify
+
+Use the following command to generate your own Neocognitrons. To stop the program, press "ctrl-c".
+java -jar Neocognitron.jar
+
+
+
+Created by Nicholas J. Conn on 5-20-2012
